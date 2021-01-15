@@ -1,7 +1,7 @@
 # Copyright (c) Facebook, Inc. and its affiliates.
 
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import torch
 from tests.trainers.test_utils import (
@@ -32,8 +32,12 @@ class TestLightningTrainerLRSchedule(unittest.TestCase):
         mmf_trainer.evaluation_loop = MagicMock(return_value=(None, None))
         mmf_trainer.training_loop()
 
-        trainer = get_lightning_trainer(max_steps=8, lr_scheduler=True)
-        trainer.trainer.fit(trainer.model, trainer.data_module.train_loader)
+        with patch(
+            "mmf.trainers.lightning_trainer.get_mmf_env",
+            return_value=MagicMock(return_value=None),
+        ):
+            trainer = get_lightning_trainer(max_steps=8, lr_scheduler=True)
+            trainer.trainer.fit(trainer.model, trainer.data_module.train_loader)
 
         mmf_trainer.model.to(trainer.model.device)
         last_model_param1 = list(mmf_trainer.model.parameters())[-1]

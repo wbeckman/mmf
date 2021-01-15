@@ -17,6 +17,7 @@ class LightningTrainerMock(LightningTrainer):
         lr_scheduler=False,
         gradient_clip_val=0.0,
         precision=32,
+        **kwargs,
     ):
         self.config = config
         self._callbacks = None
@@ -37,5 +38,11 @@ class LightningTrainerMock(LightningTrainer):
         trainer_config.gradient_clip_val = gradient_clip_val
         trainer_config.precision = precision
 
+        for key, value in kwargs.items():
+            trainer_config[key] = value
+
         self.trainer_config = trainer_config
+        self.training_config = self.config.training
+        self.training_config.batch_size = batch_size
+        self.run_type = self.config.run_type
         self.config.training.lr_scheduler = lr_scheduler
