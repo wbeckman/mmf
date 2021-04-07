@@ -101,7 +101,7 @@ class LightningTrainer(BaseTrainer):
         if self._max_updates is None and self._max_epochs is None:
             raise ValueError("Neither max_updates nor max_epochs is specified.")
 
-        train_loader = self.data_module.train_loader
+        train_loader = self.data_module.train_dataloader()
         self._max_updates, max_epochs = get_max_updates(
             self._max_updates,
             self._max_epochs,
