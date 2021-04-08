@@ -20,6 +20,7 @@ from mmf.utils.configuration import Configuration, get_global_config
 from mmf.utils.distributed import is_dist_initialized, is_master, is_xla, synchronize
 from mmf.utils.general import get_optimizer_parameters
 from omegaconf import DictConfig, OmegaConf
+from mmf.common.meter import Meter
 
 
 try:
@@ -544,3 +545,18 @@ def build_iteration_strategy(
             )
         else:
             return iteration_strategy_class(config, dataloaders, *args, **kwargs)
+
+
+def build_meters(run_type: str) -> List[Meter]:
+    train_meter, val_meter, test_meter = None, None, None
+    if "train" in run_type:
+        train_meter = Meter()
+        # val_meter used for validation after training loop
+        val_meter = Meter()
+    elif "val" in run_type or "inference" in run_type:
+        val_meter = Meter()
+
+    if "test" in run_type:
+        test_meter = Meter()
+
+    return train_meter, val_meter, test_meter
